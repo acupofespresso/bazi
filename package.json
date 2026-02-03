@@ -1,0 +1,55 @@
+{
+  "name": "@openclaw/bazi",
+  "version": "2.0.0",
+  "description": "八字排盘工具 / BaZi Paipan Tool - 基于中国传统命理学的八字排盘、五行分析、十神推算、真太阳时修正",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "bazi": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "test": "npm run build && node dist/index.js 1990-01-15 14:30",
+    "test:tst": "npm run build && node dist/index.js 1990-01-15 14:30 --city 北京 --tst",
+    "examples": "npm run build && ./examples.sh",
+    "examples:tst": "npm run build && ./examples-tst.sh",
+    "cities": "npm run build && node dist/index.js --list-cities",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "bazi",
+    "八字",
+    "命理",
+    "排盘",
+    "chinese-astrology",
+    "four-pillars",
+    "fortune-telling",
+    "lunar-calendar",
+    "ten-gods",
+    "five-elements",
+    "true-solar-time",
+    "真太阳时",
+    "地理位置",
+    "claude-skill",
+    "openclaw"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "dependencies": {
+    "lunar-javascript": "^1.7.7"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.0",
+    "typescript": "^5.9.3"
+  }
+}
