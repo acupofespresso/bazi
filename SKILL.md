@@ -32,10 +32,10 @@ A professional BaZi (Chinese Four Pillars) fortune-telling tool with accurate ca
   - 支持经度时差和时差方程双重修正
   - Supports both longitude difference and equation of time corrections
 
-- 🏙️ **城市数据库 / City Database** ⭐ **新功能 NEW** - 内置85个中国主要城市经纬度
-  - Built-in coordinates for 85 major Chinese cities
-  - 包含直辖市、省会城市、港澳台等
-  - Includes municipalities, provincial capitals, HK/Macau/Taiwan
+- 🏙️ **城市数据库 / City Database** ⭐ **大幅升级** - 内置 6000+ 中国市县区级经纬度
+  - Built-in coordinates for 6000+ Chinese cities/counties/districts
+  - 覆盖全国所有地级市、县级市、市辖区、县、自治县
+  - Coverage includes all prefecture-level cities, county-level cities, and districts
 
 ## 安装 / Installation
 
@@ -298,11 +298,10 @@ node dist/index.js 1990-01-15 14:30 --lng 87.6 --tst
 
 ### 支持的城市
 
-本工具内置85个中国主要城市的经纬度数据：
-- 直辖市：北京、上海、天津、重庆
-- 省会城市：全部31个省会
-- 重要城市：深圳、大连、青岛等
-- 港澳台：香港、澳门、台北、高雄等
+本工具内置 6000+ 中国行政区划的经纬度数据（基于 `public-wheels/china-cities`）：
+- **全覆盖**：包含全国所有省、直辖市、地级市、县级市、市辖区、县。
+- **高精度**：提供精确到街道/中心点的 6 位小数经纬度（GCJ-02 坐标系）。
+- **分区细化**：支持如“北京-海淀”、“上海-浦东”等详细分区，更精准计算局部时差。
 
 查看完整列表：
 ```bash
@@ -310,8 +309,9 @@ node dist/index.js --list-cities
 ```
 
 ## 数据来源 / Data Source
-
+ 
 - **lunar-javascript** (6tail) - 功能完善的农历历法库
+- **china-cities** (public-wheels) - 详尽的中国行政区划坐标库
 - 支持 1900-2100 年精确计算
 - 基于天文算法的节气计算
 - Open source, MIT License
@@ -333,7 +333,7 @@ bazi/
 │   ├── formatter.ts          # 输出格式化
 │   ├── types.ts              # TypeScript类型定义
 │   ├── solar-time.ts         # ⭐ 真太阳时计算模块
-│   ├── cities.ts             # ⭐ 城市数据库（85个城市）
+│   ├── cities.ts             # ⭐ 城市数据库（6000+ 条目）
 │   └── lunar-javascript.d.ts # lunar-javascript类型声明
 ├── dist/                     # 编译输出目录
 ├── .claude/
@@ -371,7 +371,7 @@ npm test
 ### Phase 2 (v2.0.0) ✅ **最新版本**
 
 ✅ **真太阳时修正** - 基于地理位置的精确时间修正
-✅ **城市数据库** - 内置85个中国主要城市经纬度
+✅ **城市数据库** - 内置 6000+ 中国市、县、区级经纬度
 ✅ **经度时差计算** - 精确的地理位置修正
 ✅ **时差方程计算** - 天文时间修正（精度±30秒）
 ✅ **多种输入方式** - 支持城市名、经度、经纬度
@@ -399,7 +399,7 @@ npm test
 🔜 命理解读 - 性格、事业、婚姻分析
 🔜 合婚功能 - 两个八字配对分析
 🔜 择吉功能 - 选择良辰吉日
-🔜 更多城市 - 扩展到300+城市
+🔜 更多城市 - 扩展到海外主要城市
 
 ## 使用示例合集 / Usage Examples
 
@@ -446,7 +446,7 @@ chmod +x my-family.sh
 八字月柱以节气为准，不是农历月份！立春换年，节气换月。
 
 ⚠️ **真太阳时**
-严格的八字排盘需要考虑真太阳时修正（根据出生地经度）。目前版本使用北京时间，后续将支持地理位置修正。
+严格的八字排盘需要考虑真太阳时修正（根据出生地经度）。本工具已内置 6000+ 城市的高精度数据，建议排盘时一并使用 `--tst`。
 
 ⚠️ **仅供参考**
 本工具仅作为命理学习和研究使用，不构成任何人生建议。
