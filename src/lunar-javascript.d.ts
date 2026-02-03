@@ -35,6 +35,10 @@ declare module 'lunar-javascript' {
     getDayZhi(): string;
     getTimeGan(): string;
     getTimeZhi(): string;
+    getYearStick(): string;
+    getMonthStick(): string;
+    getDayStick(): string;
+    getTimeStick(): string;
     getYearNaYin(): string;
     getMonthNaYin(): string;
     getDayNaYin(): string;
@@ -51,5 +55,7 @@ declare module 'lunar-javascript' {
     getMonthHideGan(): string[];
     getDayHideGan(): string[];
     getTimeHideGan(): string[];
+    setSect(sect: number): void;
+    getShiShen(gan: string): string;
   }
 }

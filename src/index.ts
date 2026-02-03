@@ -93,6 +93,14 @@ export function parseInput(args: string[]): BaziInput | null {
       }
     }
 
+    // 检查是否 JSON 输出
+    const jsonIndex = argsCopy.indexOf('--json');
+    let isJson = false;
+    if (jsonIndex !== -1) {
+      isJson = true;
+      argsCopy.splice(jsonIndex, 1);
+    }
+
     // 解析日期时间
     if (argsCopy.length >= 1) {
       // 处理 1990-01-15 或 1990/01/15 格式
@@ -152,7 +160,9 @@ export function parseInput(args: string[]): BaziInput | null {
       gender,
       isLunar,
       location,
-      useTrueSolarTime
+      useTrueSolarTime,
+      // @ts-ignore (扩展类型以支持临时标志)
+      isJson
     };
   } catch (error) {
     return null;
@@ -163,7 +173,7 @@ export function parseInput(args: string[]): BaziInput | null {
  * 获取帮助信息
  */
 function getHelpMessage(): string {
-  return `八字排盘工具
+  return `八字排盘工具 (V2)
 
 使用方法：
   bazi <日期> <时间> [选项]
@@ -171,41 +181,29 @@ function getHelpMessage(): string {
 示例：
   基础排盘：
     bazi 1990-01-15 14:30
-    bazi 1990/01/15 14:30
-    bazi 1990 1 15 14 30
-    bazi 1990-01-15 14:30 男
-    bazi --lunar 1989-12-19 14:30
+    bazi --lunar 1989-12-19 14:30 男
+    bazi 1990-01-15 14:30 --json
 
   真太阳时排盘：
     bazi 1990-01-15 14:30 --city 北京 --tst
-    bazi 1990-01-15 14:30 --lng 87.6 --true-solar-time
-    bazi 1990-01-15 14:30 --location 116.4,39.9 --tst
-
-  城市列表：
-    bazi --list-cities
-    bazi --search 北京
+    bazi 1990-01-15 14:30 --lng 87.6 --tst
 
 选项：
   --lunar            使用农历日期
+  --gender <男/女>    指定性别（或直接输入 男/女）
   --city <城市名>     指定出生城市（需配合--tst使用）
   --lng <经度>       指定经度（东经为正，需配合--tst使用）
-  --location <lng,lat>  指定经纬度（需配合--tst使用）
-  --tst              使用真太阳时修正（简写）
-  --true-solar-time  使用真太阳时修正（完整）
+  --tst              使用真太阳时修正
+  --json             输出 JSON 格式数据
   --list-cities      列出支持的城市
   --search <关键词>   搜索城市
-  男/女               性别（可选，用于后续大运推算）
 
 日期格式：
   公历：YYYY-MM-DD 或 YYYY/MM/DD
   时间：HH:MM 或 HH (24小时制)
 
-支持的城市数量：${getCityCount()}个
-
 真太阳时说明：
-  真太阳时考虑了地球经度差异和时差方程，更符合传统命理的要求。
-  不同地点的时差可达2小时以上，可能影响时柱的判定。
-  建议在排盘时使用出生地的真太阳时以获得更准确的结果。`;
+  真太阳时考虑了地球经度差异和时差方程，更符合传统命理的要求。`;
 }
 
 /**
@@ -248,22 +246,17 @@ export function runBazi(args: string[]): string {
 
   // 如果指定了真太阳时但没有提供位置信息，给出提示
   if (input.useTrueSolarTime && !input.location) {
-    return `错误：使用真太阳时需要提供位置信息
-
-请使用以下方式之一指定位置：
-  --city 北京
-  --lng 116.4
-  --location 116.4,39.9
-
-示例：
-  bazi 1990-01-15 14:30 --city 北京 --tst
-
-提示：使用 "bazi --list-cities" 查看支持的城市列表`;
+    return `错误：使用真太阳时需要提供位置信息`;
   }
 
   try {
     // 计算八字
     const result = calculateBazi(input);
+
+    // @ts-ignore
+    if (input.isJson) {
+      return JSON.stringify(result, null, 2);
+    }
 
     // 格式化输出
     return formatBaziResult(result);

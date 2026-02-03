@@ -37,23 +37,28 @@ export interface BaziInput {
 }
 
 /**
- * 四柱信息
+ * 单柱信息
  */
-export interface Pillars {
-  year: string;    // 年柱，如：己巳
-  month: string;   // 月柱，如：丁丑
-  day: string;     // 日柱，如：癸酉
-  hour: string;    // 时柱，如：己未
+export interface PillarData {
+  gan: string;          // 天干
+  zhi: string;          // 地支
+  shishenGan: string;   // 天干十神
+  shishenZhi: string;   // 地支十神（主气）
+  hiddens: {
+    gan: string;        // 藏干
+    shishen: string;    // 藏干十神
+  }[];
+  shensha: string[];    // 该柱所含神煞
 }
 
 /**
- * 十神信息
+ * 四柱信息
  */
-export interface ShiShen {
-  year: string;
-  month: string;
-  day: string;
-  hour: string;
+export interface Pillars {
+  year: PillarData;
+  month: PillarData;
+  day: PillarData;
+  hour: PillarData;
 }
 
 /**
@@ -74,8 +79,8 @@ export interface BaziResult {
   solar: string;                    // 公历，如：1990年1月15日 14:30
   lunar: string;                    // 农历，如：己巳年 腊月十九 未时
   pillars: Pillars;                 // 四柱
-  shiShen: ShiShen;                 // 十神
   wuXing: WuXing;                   // 五行统计
   naYin: string;                    // 纳音，如：大林木
   trueSolarTime?: TrueSolarTimeResult;  // 真太阳时信息（如果使用）
+  gender?: '男' | '女';              // 性别
 }
