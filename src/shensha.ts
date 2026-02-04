@@ -23,7 +23,13 @@ export class ShenShaEngine {
             this.checkYangRen,
             this.checkJieSha,
             this.checkWangShen,
-            this.checkJiangXing
+            this.checkJiangXing,
+            this.checkKongWang,
+            this.checkTianDe,
+            this.checkKuiGang,
+            this.checkYinYangChaCuo,
+            this.checkJinYu,
+            this.checkGuoYin
         ];
 
         for (const rule of rules) {
@@ -295,6 +301,156 @@ export class ShenShaEngine {
         };
 
         if (map[monthZhi] === targetGan) return '月德';
+        return null;
+    }
+
+    /**
+     * 空亡 (根据日柱旬空)
+     * 规则：甲子旬中戌亥空...
+     */
+    private static checkKongWang(pillars: Pillars, target: 'year' | 'month' | 'day' | 'hour'): string | null {
+        const dayGan = pillars.day.gan;
+        const dayZhi = pillars.day.zhi;
+
+        const gans = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+        const zhis = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+
+        const ganIdx = gans.indexOf(dayGan);
+        const zhiIdx = zhis.indexOf(dayZhi);
+
+        // 计算这一旬的特征差值
+        let diff = zhiIdx - ganIdx;
+        if (diff < 0) diff += 12;
+
+        const kongWangMap: Record<number, string[]> = {
+            0: ['戌', '亥'],  // 甲子旬 (差0)
+            10: ['申', '酉'], // 甲戌旬 (差10)
+            8: ['午', '未'],  // 甲申旬 (差8)
+            6: ['辰', '巳'],  // 甲午旬 (差6)
+            4: ['寅', '卯'],  // 甲辰旬 (差4)
+            2: ['子', '丑']   // 甲寅旬 (差2)
+        };
+
+        const targetZhi = pillars[target].zhi;
+        if (kongWangMap[diff]?.includes(targetZhi)) {
+            return '空亡';
+        }
+        return null;
+    }
+
+    /**
+     * 天德贵人
+     * 基准：月支
+     * 规则：正丁二坤中，三壬四辛同，五亥六甲上，七癸八寅逢，九丙十居乙，子巳丑庚中
+     */
+    private static checkTianDe(pillars: Pillars, target: 'year' | 'month' | 'day' | 'hour'): string | null {
+        const monthZhi = pillars.month.zhi;
+        const targetGan = pillars[target].gan;
+        const targetZhi = pillars[target].zhi;
+
+        const map: Record<string, string> = {
+            '寅': '丁', // 正月
+            '卯': '申', // 二月 (这里是坤卦，对应申) 注意：天德有时对应干有时对应支
+            '辰': '壬', // 三月
+            '巳': '辛', // 四月
+            '午': '亥', // 五月 (干支混用，亥)
+            '未': '甲', // 六月
+            '申': '癸', // 七月
+            '酉': '寅', // 八月 (寅)
+            '戌': '丙', // 九月
+            '亥': '乙', // 十月
+            '子': '巳', // 十一月 (巳)
+            '丑': '庚'  // 十二月
+        };
+
+        // 注意：二月(卯)对应申，五月(午)对应亥，八月(酉)对应寅，十一月(子)对应巳，不仅查干也查支
+        const val = map[monthZhi];
+        if (!val) return null;
+
+        // 检查天干或地支是否匹配
+        if (targetGan === val || targetZhi === val) return '天德';
+
+        return null;
+    }
+
+    /**
+     * 魁罡
+     * 基准：日柱
+     * 规则：壬辰、庚戌、庚辰、戊戌
+     */
+    private static checkKuiGang(pillars: Pillars, target: 'year' | 'month' | 'day' | 'hour'): string | null {
+        if (target !== 'day') return null; // 只在日柱显示
+
+        const gz = pillars.day.gan + pillars.day.zhi;
+        const kuiGangs = ['壬辰', '庚戌', '庚辰', '戊戌'];
+
+        if (kuiGangs.includes(gz)) return '魁罡';
+        return null;
+    }
+
+    /**
+     * 阴阳差错
+     * 基准：日柱
+     * 规则：丙子, 丁丑, 戊寅, 辛卯, 壬辰, 癸巳, 丙午, 丁未, 戊申, 辛酉, 壬戌, 癸亥
+     */
+    private static checkYinYangChaCuo(pillars: Pillars, target: 'year' | 'month' | 'day' | 'hour'): string | null {
+        if (target !== 'day') return null; // 只在日柱显示
+
+        const gz = pillars.day.gan + pillars.day.zhi;
+        const list = [
+            '丙子', '丁丑', '戊寅', '辛卯', '壬辰', '癸巳',
+            '丙午', '丁未', '戊申', '辛酉', '壬戌', '癸亥'
+        ];
+
+        if (list.includes(gz)) return '阴阳差错';
+        return null;
+    }
+
+    /**
+     * 金舆
+     * 基准：日干
+     * 规则：甲龙乙蛇丙戊马，丁己猴歌庚犬方，辛猪壬牛癸逢虎
+     */
+    private static checkJinYu(pillars: Pillars, target: 'year' | 'month' | 'day' | 'hour'): string | null {
+        const dayGan = pillars.day.gan;
+        const targetZhi = pillars[target].zhi;
+
+        const map: Record<string, string> = {
+            '甲': '辰',
+            '乙': '巳',
+            '丙': '午', '戊': '午',
+            '丁': '申', '己': '申',
+            '庚': '戌',
+            '辛': '亥',
+            '壬': '丑',
+            '癸': '寅'
+        };
+
+        if (map[dayGan] === targetZhi) return '金舆';
+        return null;
+    }
+
+    /**
+     * 国印贵人
+     * 基准：日干
+     * 规则：甲见戌，乙见亥，丙见丑，丁见寅，戊见丑，己见寅，庚见辰，辛见巳，壬见未，癸见申
+     */
+    private static checkGuoYin(pillars: Pillars, target: 'year' | 'month' | 'day' | 'hour'): string | null {
+        const dayGan = pillars.day.gan;
+        const targetZhi = pillars[target].zhi;
+
+        const map: Record<string, string> = {
+            '甲': '戌',
+            '乙': '亥',
+            '丙': '丑', '戊': '丑',
+            '丁': '寅', '己': '寅',
+            '庚': '辰',
+            '辛': '巳',
+            '壬': '未',
+            '癸': '申'
+        };
+
+        if (map[dayGan] === targetZhi) return '国印';
         return null;
     }
 }

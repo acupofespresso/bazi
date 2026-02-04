@@ -3,6 +3,12 @@ import { formatBaziResult } from './formatter';
 import { BaziInput, LocationInfo } from './types';
 import { getCityLocation, getSupportedCities, searchCities, getCityCount } from './cities';
 
+export * from './types';
+export * from './shensha';
+export { calculateBazi, formatBaziResult };
+
+
+
 /**
  * 解析输入参数
  * 支持格式：

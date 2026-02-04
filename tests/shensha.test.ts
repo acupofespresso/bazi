@@ -1,5 +1,4 @@
-import { ShenShaEngine } from '../shensha';
-import { Pillars } from '../types';
+import { ShenShaEngine, Pillars } from '@/index';
 
 /**
  * 极简测试工具
@@ -87,6 +86,37 @@ function runTests() {
     // 12. 将星 (寅午戌见午)
     const p12 = createMockPillars(['丙', '午'], ['庚', '寅'], ['壬', '戌'], ['甲', '午']);
     assert(ShenShaEngine.getShenSha(p12, 'hour').includes('将星'), '时柱应包含将星 (年支午见时支午)');
+
+    // --- 进阶神煞 (V2.1) ---
+
+    // 13. 空亡 (甲子旬中戌亥空)
+    // 日柱 甲子 -> 旬空为 戌亥
+    const p13 = createMockPillars(['庚', '戌'], ['丙', '戌'], ['甲', '子'], ['乙', '亥']);
+    // 年支戌，月支戌，时支亥 都在空亡范围内
+    assert(ShenShaEngine.getShenSha(p13, 'year').includes('空亡'), '年柱应包含空亡');
+    assert(ShenShaEngine.getShenSha(p13, 'month').includes('空亡'), '月柱应包含空亡');
+    assert(ShenShaEngine.getShenSha(p13, 'hour').includes('空亡'), '时柱应包含空亡');
+
+    // 14. 天德贵人 (正丁二坤中... 六甲上)
+    // 六月 (未月) 见 甲
+    const p14 = createMockPillars(['甲', '子'], ['癸', '未'], ['庚', '申'], ['丙', '子']);
+    assert(ShenShaEngine.getShenSha(p14, 'year').includes('天德'), '年柱应包含天德 (未月见年干甲)');
+
+    // 15. 魁罡 (壬辰、庚戌、庚辰、戊戌 日)
+    const p15 = createMockPillars(['甲', '子'], ['丙', '寅'], ['壬', '辰'], ['乙', '巳']);
+    assert(ShenShaEngine.getShenSha(p15, 'day').includes('魁罡'), '日柱应包含魁罡 (壬辰日)');
+
+    // 16. 阴阳差错 (丙子、丁丑...)
+    const p16 = createMockPillars(['甲', '子'], ['丙', '寅'], ['丙', '子'], ['乙', '巳']);
+    assert(ShenShaEngine.getShenSha(p16, 'day').includes('阴阳差错'), '日柱应包含阴阳差错 (丙子日)');
+
+    // 17. 金舆 (甲龙乙蛇... 甲->辰, 乙->巳)
+    const p17 = createMockPillars(['甲', '子'], ['丙', '寅'], ['甲', '申'], ['戊', '辰']);
+    assert(ShenShaEngine.getShenSha(p17, 'hour').includes('金舆'), '时柱应包含金舆 (日干甲见时支辰)');
+
+    // 18. 国印 (甲见戌, 乙见亥...)
+    const p18 = createMockPillars(['甲', '子'], ['丙', '寅'], ['甲', '申'], ['壬', '戌']);
+    assert(ShenShaEngine.getShenSha(p18, 'hour').includes('国印'), '时柱应包含国印 (日干甲见时支戌)');
 
     console.log('\n所有神煞判定测试通过！');
 }
